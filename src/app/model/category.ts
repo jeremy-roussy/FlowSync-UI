@@ -1,6 +1,6 @@
 interface Category {
     id: number,
-    name: String
+    name: string
 }
 
 export type { Category }

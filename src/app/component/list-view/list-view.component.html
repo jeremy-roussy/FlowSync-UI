@@ -10,7 +10,7 @@
               <th [style.width]="column.width">
                 {{ column.label }}
                 @if (column.sortable && config.sortable) {
-                  <button (click)="sortBy(column.key)">↕️</button>
+                    <fa-icon [icon]="faSort" size="sm" (click)="sortBy(column.key)"/>
                 }
               </th>
             }
@@ -25,9 +25,9 @@
             <tr>
               <td><fa-icon [icon]="faPen" size="sm"/></td>
               @for(column of config.columns; track column.key) {
-                <td>{{ getItemValue(item, column.key) }}</td>
+                <td>{{ getItemValue(item, column.key) }} @if(column.key == "price") { € }</td>
               }
-              <td><fa-icon [icon]="faTrash" size="sm"/></td>
+              <td><fa-icon [icon]="faTrash" size="sm" (click)="delete(item.id)"/></td>
             </tr>
           }
         </tbody>

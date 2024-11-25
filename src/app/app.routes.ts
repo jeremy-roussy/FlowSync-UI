@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
-import { ContactListViewComponent } from './component/list-view/contact-list-view.component';
+import { ContactListViewComponent } from './component/list-view/contact/contact-list-view.component';
 import { CalendarViewComponent } from './component/calendar-view/calendar-view.component';
-import { ProductListViewComponent } from './component/list-view/product-list-view.component';
+import { ProductListViewComponent } from './component/list-view/product/product-list-view.component';
 
 export const routes: Routes = [
     {

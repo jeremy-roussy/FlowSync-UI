@@ -1,9 +1,9 @@
 interface Contact {
     id: number,
-    address: String,
-    email: String,
-    firstname: String,
-    name: String
+    address: string,
+    email: string,
+    firstname: string,
+    name: string
 }
 
 export type { Contact }

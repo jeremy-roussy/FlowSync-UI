@@ -2,7 +2,7 @@ import { Category } from "./category";
 
 interface Product {
     id: number,
-    name: String,
+    name: string,
     price: number,
     category: Category
 }

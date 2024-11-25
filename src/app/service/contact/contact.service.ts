@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, catchError, map, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { Contact } from '../model/contact';
+import { Contact } from '../../model/contact';
 
 @Injectable({
   providedIn: 'root'
@@ -26,5 +26,9 @@ export class ContactService {
           return contacts;
         })
       );
+  }
+
+  public deleteContact(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/contacts/${id}`);
   }
 }
