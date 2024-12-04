@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, catchError, forkJoin, Observable, tap, throwError } from 'rxjs';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Address } from '../../model/address';
+import { AuthenticationService } from '../authentication/authentication.service';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,7 @@ export class AddressService {
   private addressesSubject = new BehaviorSubject<Address[]>([]);
   public readonly addresses$ = this.addressesSubject.asObservable();
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private authentication: AuthenticationService) { }
 
   /**
    * Fetches the list of all addresses from the API.
@@ -21,7 +22,9 @@ export class AddressService {
    * @returns Observable<Address[]> - Observable emitting the list of addresses.
    */
   public getAddresses(): Observable<Address[]> {
-    return this.http.get<Address[]>(this.apiUrl).pipe(
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authentication.getToken()}`);
+
+    return this.http.get<Address[]>(this.apiUrl, { 'headers': headers }).pipe(
       catchError((error) => this.handleError(error, `Failed to fetch addresses`)),
       tap((addresses) => this.addressesSubject.next(addresses))
     );
@@ -34,7 +37,9 @@ export class AddressService {
    * @returns Observable<Address> - Observable emitting the requested address.
    */
   public getAddress(id: number): Observable<Address> {
-    return this.http.get<Address>(`${this.apiUrl}/${id}`).pipe(
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authentication.getToken()}`);
+
+    return this.http.get<Address>(`${this.apiUrl}/${id}`, { 'headers': headers }).pipe(
       catchError((error) => this.handleError(error, `Failed to fetch address with ID ${id}`))
     );
   }
@@ -47,7 +52,9 @@ export class AddressService {
    * @returns Observable<void> - Observable that completes when the deletion is successful.
    */
   public deleteAddress(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authentication.getToken()}`);
+
+    return this.http.delete<void>(`${this.apiUrl}/${id}`, { 'headers': headers }).pipe(
       catchError((error) => this.handleError(error, `Failed to delete address with ID ${id}`)),
       tap(() => {
         const updatedAddresses = this.addressesSubject.getValue().filter(p => p.id !== id);
@@ -84,7 +91,9 @@ export class AddressService {
    * @returns Observable<Address> - Observable emitting the updated address.
    */
   public updateAddress(id: number, addressData: Partial<Address>): Observable<Address> {
-    return this.http.put<Address>(`${this.apiUrl}/${id}`, addressData).pipe(
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authentication.getToken()}`);
+
+    return this.http.put<Address>(`${this.apiUrl}/${id}`, addressData, { 'headers': headers }).pipe(
       catchError((error) => this.handleError(error, 'Failed to update address')),
       tap((updatedAddress) => {
         const currentAddresses = this.addressesSubject.getValue();
@@ -104,7 +113,9 @@ export class AddressService {
    * @returns Observable<Address> - Observable emitting the created address.
    */
   public createAddress(address: any): Observable<Address> {
-    return this.http.post<Address>(this.apiUrl, address).pipe(
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authentication.getToken()}`);
+
+    return this.http.post<Address>(this.apiUrl, address, { 'headers': headers }).pipe(
       catchError((error) => this.handleError(error, 'Failed to create address')),
       tap((newAddress) => {
         const updatedAddresses = [...this.addressesSubject.getValue(), newAddress];

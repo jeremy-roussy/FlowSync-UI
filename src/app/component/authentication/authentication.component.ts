@@ -21,7 +21,7 @@ export class AuthenticationComponent implements AfterViewInit {
   onSubmit() {
     this.authenticationService.login(this.credentials).subscribe({
       next: () => {
-        this.router.navigateByUrl('');
+        this.router.navigateByUrl('/home');
       },
       error: (err) => {
         console.error('Login failed', err);

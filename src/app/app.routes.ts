@@ -26,6 +26,7 @@ export const routes: Routes = [
             { path: "form-view", component: FormViewComponent }
         ]},
         { path: "calendar-view", component: CalendarViewComponent },
+        { path: "", redirectTo: "/home", pathMatch: "full" },
         { path: "home", component: HomeComponent }
     ]},
     { path: "", redirectTo: "/authentication", pathMatch: "full" },

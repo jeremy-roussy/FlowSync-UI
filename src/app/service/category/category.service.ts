@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, catchError, forkJoin, Observable, tap, throwError } from 'rxjs';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Category } from '../../model/category';
+import { AuthenticationService } from '../authentication/authentication.service';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,7 @@ export class CategoryService {
   private categoriesSubject = new BehaviorSubject<Category[]>([]);
   public readonly categories$ = this.categoriesSubject.asObservable();
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private authentication: AuthenticationService) { }
 
   /**
    * Fetches the list of all categories from the API.
@@ -21,7 +22,9 @@ export class CategoryService {
    * @returns Observable<Category[]> - Observable emitting the list of categories.
    */
   public getCategories(): Observable<Category[]> {
-    return this.http.get<Category[]>(this.apiUrl).pipe(
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authentication.getToken()}`);
+
+    return this.http.get<Category[]>(this.apiUrl, { 'headers': headers }).pipe(
       catchError((error) => this.handleError(error, `Failed to fetch categories`)),
       tap((categories) => this.categoriesSubject.next(categories))
     );
@@ -34,7 +37,9 @@ export class CategoryService {
    * @returns Observable<Category> - Observable emitting the requested category.
    */
   public getCategory(id: number): Observable<Category> {
-    return this.http.get<Category>(`${this.apiUrl}/${id}`).pipe(
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authentication.getToken()}`);
+
+    return this.http.get<Category>(`${this.apiUrl}/${id}`, { 'headers': headers }).pipe(
       catchError((error) => this.handleError(error, `Failed to fetch category with ID ${id}`))
     );
   }
@@ -47,7 +52,9 @@ export class CategoryService {
    * @returns Observable<void> - Observable that completes when the deletion is successful.
    */
   public deleteCategory(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authentication.getToken()}`);
+
+    return this.http.delete<void>(`${this.apiUrl}/${id}`, { 'headers': headers }).pipe(
       catchError((error) => this.handleError(error, `Failed to delete category with ID ${id}`)),
       tap(() => {
         const updatedCategories = this.categoriesSubject.getValue().filter(p => p.id !== id);
@@ -84,7 +91,9 @@ export class CategoryService {
    * @returns Observable<Category> - Observable emitting the updated category.
    */
   public updateCategory(id: number, categoryData: Partial<Category>): Observable<Category> {
-    return this.http.put<Category>(`${this.apiUrl}/${id}`, categoryData).pipe(
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authentication.getToken()}`);
+
+    return this.http.put<Category>(`${this.apiUrl}/${id}`, categoryData, { 'headers': headers }).pipe(
       catchError((error) => this.handleError(error, 'Failed to update category')),
       tap((updatedCategory) => {
         const currentCategories = this.categoriesSubject.getValue();
@@ -104,7 +113,9 @@ export class CategoryService {
    * @returns Observable<Category> - Observable emitting the created category.
    */
   public createCategory(category: any): Observable<Category> {
-    return this.http.post<Category>(this.apiUrl, category).pipe(
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authentication.getToken()}`);
+
+    return this.http.post<Category>(this.apiUrl, category, { 'headers': headers }).pipe(
       catchError((error) => this.handleError(error, 'Failed to create category')),
       tap((newCategory) => {
         const updatedCategories = [...this.categoriesSubject.getValue(), newCategory];

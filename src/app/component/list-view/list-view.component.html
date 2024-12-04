@@ -54,7 +54,7 @@
                 }
 
                 @else {
-                  <td>{{ getItemValue(item, column.key) }}</td>
+                  <td>{{ getItemValue(item, column.key) }} @if(column.key == "price") { € }</td>
                 }
               }
               <td><fa-icon [icon]="faTrash" size="sm" (click)="delete(item.id)"/></td>

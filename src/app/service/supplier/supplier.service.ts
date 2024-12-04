@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, catchError, forkJoin, Observable, tap, throwError } from 'rxjs';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Supplier } from '../../model/supplier';
+import { AuthenticationService } from '../authentication/authentication.service';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,7 @@ export class SupplierService {
   private suppliersSubject = new BehaviorSubject<Supplier[]>([]);
   public readonly suppliers$ = this.suppliersSubject.asObservable();
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private authentication: AuthenticationService) { }
 
   /**
    * Fetches the list of all suppliers from the API.
@@ -21,7 +22,9 @@ export class SupplierService {
    * @returns Observable<Supplier[]> - Observable emitting the list of suppliers.
    */
   public getSuppliers(): Observable<Supplier[]> {
-    return this.http.get<Supplier[]>(this.apiUrl).pipe(
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authentication.getToken()}`);
+
+    return this.http.get<Supplier[]>(this.apiUrl, { 'headers': headers }).pipe(
       catchError((error) => this.handleError(error, `Failed to fetch suppliers`)),
       tap((suppliers) => this.suppliersSubject.next(suppliers))
     );
@@ -34,7 +37,9 @@ export class SupplierService {
    * @returns Observable<Supplier> - Observable emitting the requested supplier.
    */
   public getSupplier(id: number): Observable<Supplier> {
-    return this.http.get<Supplier>(`${this.apiUrl}/${id}`).pipe(
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authentication.getToken()}`);
+
+    return this.http.get<Supplier>(`${this.apiUrl}/${id}`, { 'headers': headers }).pipe(
       catchError((error) => this.handleError(error, `Failed to fetch supplier with ID ${id}`))
     );
   }
@@ -47,7 +52,9 @@ export class SupplierService {
    * @returns Observable<void> - Observable that completes when the deletion is successful.
    */
   public deleteSupplier(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authentication.getToken()}`);
+
+    return this.http.delete<void>(`${this.apiUrl}/${id}`, { 'headers': headers }).pipe(
       catchError((error) => this.handleError(error, `Failed to delete supplier with ID ${id}`)),
       tap(() => {
         const updatedSuppliers = this.suppliersSubject.getValue().filter(p => p.id !== id);
@@ -84,7 +91,9 @@ export class SupplierService {
    * @returns Observable<Supplier> - Observable emitting the updated supplier.
    */
   public updateSupplier(id: number, supplierData: Partial<Supplier>): Observable<Supplier> {
-    return this.http.put<Supplier>(`${this.apiUrl}/${id}`, supplierData).pipe(
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authentication.getToken()}`);
+
+    return this.http.put<Supplier>(`${this.apiUrl}/${id}`, supplierData, { 'headers': headers }).pipe(
       catchError((error) => this.handleError(error, 'Failed to update supplier')),
       tap((updatedSupplier) => {
         const currentSuppliers = this.suppliersSubject.getValue();
@@ -104,7 +113,9 @@ export class SupplierService {
    * @returns Observable<Supplier> - Observable emitting the created supplier.
    */
   public createSupplier(supplier: any): Observable<Supplier> {
-    return this.http.post<Supplier>(this.apiUrl, supplier).pipe(
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authentication.getToken()}`);
+
+    return this.http.post<Supplier>(this.apiUrl, supplier, { 'headers': headers }).pipe(
       catchError((error) => this.handleError(error, 'Failed to create supplier')),
       tap((newSupplier) => {
         const updatedSuppliers = [...this.suppliersSubject.getValue(), newSupplier];
